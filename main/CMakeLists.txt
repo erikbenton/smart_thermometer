@@ -3,4 +3,7 @@ idf_component_register(
         "main.c"
         "bsp.c"
         "tmp117.c"
-    INCLUDE_DIRS ".")
+        "temperature_recorder.c"
+    INCLUDE_DIRS
+        "."
+)

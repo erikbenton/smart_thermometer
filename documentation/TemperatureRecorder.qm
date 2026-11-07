@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model version="7.0.3" links="0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.state-machine.com/qm/qm7.xsd">
+ <framework name="qpc"/>
+ <package name="AOs" stereotype="0x02">
+  <class name="TemperatureRecorder" superclass="qpc::QMActive">
+   <attribute name="TimeEvt" type="QTimeEvt" visibility="0x02" properties="0x00"/>
+   <statechart properties="0x00">
+    <initial target="../1">
+     <initial_glyph conn="2,4,5,0,21,6">
+      <action box="0,-2,10,2"/>
+     </initial_glyph>
+    </initial>
+    <state name="init">
+     <entry>BSP_tmp117_init();
+TRAN(wait4running);</entry>
+     <tran trig="" target="../../2">
+      <action>Taken after finishing entry action</action>
+      <tran_glyph color="2" conn="39,16,1,1,3,14,-3">
+       <action box="0,-2,10,2"/>
+      </tran_glyph>
+     </tran>
+     <state_glyph node="7,10,32,14">
+      <entry box="0,3,26,6"/>
+     </state_glyph>
+    </state>
+    <state name="wait4running">
+     <entry>BSP_ledGreenOn();</entry>
+     <exit>BSP_ledGreenOff();</exit>
+     <tran trig="START_RECORDING" target="../../3/1">
+      <tran_glyph conn="7,40,3,3,-5,27,9">
+       <action box="0,-1,19,2"/>
+      </tran_glyph>
+     </tran>
+     <state_glyph node="7,27,32,17">
+      <entry box="0,3,18,4"/>
+      <exit box="0,7,18,4"/>
+     </state_glyph>
+    </state>
+    <state name="running">
+     <entry>BSP_ledBlueOn();</entry>
+     <exit>BSP_ledBlueOff();</exit>
+     <tran trig="TIMEOUT" target="../1">
+      <tran_glyph conn="7,61,3,0,16,3">
+       <action box="0,-2,10,2"/>
+      </tran_glyph>
+     </tran>
+     <state name="recording">
+      <entry>TimeEvent_arm(...);
+record_temp();</entry>
+      <tran trig="" target="../../2">
+       <action>Taken after finishing entry action</action>
+       <tran_glyph color="2" conn="34,67,1,3,7">
+        <action box="0,-2,10,2"/>
+       </tran_glyph>
+      </tran>
+      <state_glyph node="11,64,23,11">
+       <entry box="0,3,22,6"/>
+      </state_glyph>
+     </state>
+     <state name="idle">
+      <entry>TimeEvt_arm(...);</entry>
+      <state_glyph node="41,64,22,11">
+       <entry box="0,3,16,4"/>
+      </state_glyph>
+     </state>
+     <state name="report">
+      <entry>report_temperature(...);</entry>
+      <state_glyph node="41,78,22,11">
+       <entry box="0,3,21,4"/>
+      </state_glyph>
+     </state>
+     <state name="reset">
+      <entry>reset_variables(...);</entry>
+      <tran trig="" target="../../../2">
+       <action>Taken after finishing entry action</action>
+       <tran_glyph color="2" conn="11,81,3,3,-7,-51,3">
+        <action box="0,-2,10,2"/>
+       </tran_glyph>
+      </tran>
+      <state_glyph node="11,78,23,11">
+       <entry box="0,3,18,5"/>
+      </state_glyph>
+     </state>
+     <state_glyph node="7,47,61,44">
+      <entry box="0,3,16,4"/>
+      <exit box="0,7,16,4"/>
+     </state_glyph>
+    </state>
+    <state_diagram size="72,94"/>
+   </statechart>
+  </class>
+ </package>
+</model>

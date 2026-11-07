@@ -3,8 +3,19 @@
 
 #include "driver/i2c_master.h"
 #include "esp_err.h"
+#include "active_object.h"
 
 void BSP_init(void);
+
+/* Events */
+
+enum EventSignals
+{
+    START_RECORDING_SIG = USER_SIG,
+    TIMEOUT_SIG,
+    /* ... */
+    MAX_SIG
+};
 
 /* -------------------- I2C Facilities -------------------- */
 

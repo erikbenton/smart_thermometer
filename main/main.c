@@ -5,8 +5,15 @@
 #include "esp_log.h"
 #include "bsp.h"
 #include "tmp117.h"
+#include "temperature_recorder.h"
+#include "active_object.h"
+
 
 static TimerHandle_t tmp117_timer;
+
+static TemperatureRecorder temperature_recorder;
+static Event *temperature_recorder_q[10];
+static StackType_t temperature_recorder_stack[configMINIMAL_STACK_SIZE];
 
 void read_tmp117_temperature(TimerHandle_t xTimer)
 {
