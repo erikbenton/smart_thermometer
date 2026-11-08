@@ -126,4 +126,16 @@ void vApplicationTickHook(void)
         { /* the button is released */
         }
     }
+    if ((tmp & SW2) != 0U)
+    { /* debounced SW2 state changed? */
+        if ((buttons.depressed & SW2) != 0U)
+        { /* is SW2 depressed? */
+            /* post the "button-pressed" event */
+            static Event const stop_recording_evt = {STOP_RECORDING_SIG};
+            Active_post(temperature_recorder, &stop_recording_evt);
+        }
+        else
+        { /* the button is released */
+        }
+    }
 }

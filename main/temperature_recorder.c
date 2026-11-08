@@ -9,6 +9,11 @@ void record_temperature(TemperatureRecorder *const me)
     TMP117_read_temperature_celsius(&(me->current_temp_celsius));
 }
 
+void reset_recordings(TemperatureRecorder *const me)
+{
+    me->current_temp_celsius = 0.0f;
+}
+
 void TemperatureRecorder_ctor(TemperatureRecorder *const me)
 {
     Active_ctor(&(me->super), (StateHandler)TemperatureRecorder_initial);
@@ -67,17 +72,18 @@ State TemperatureRecorder_recording(TemperatureRecorder *const me, Event const *
 
     case EXIT_SIG:
         BSP_ledBlueOff();
-        // TODO: reset_recordings();
+        reset_recordings(me);
         status = HANDLED_STATUS;
         break;
 
     case REPORT_TEMP_SIG:
         // report_temperature_cb(...);
-        ESP_LOGI("TEMP AO", "Temp: %.3f", (me->current_temp_celsius) * 1.8 + 32.0);
+        ESP_LOGI("TEMP AO", "Temp: %.3f", (me->current_temp_celsius) * 1.8f + 32.0f);
         status = HANDLED_STATUS;
         break;
 
     case STOP_RECORDING_SIG:
+        reset_recordings(me);
         status = TRANSITION(TemperatureRecorder_wait4Start);
         break;
 

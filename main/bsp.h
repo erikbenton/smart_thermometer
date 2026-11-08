@@ -7,18 +7,21 @@
 
 void BSP_init(Active *temp_recorder);
 
+/* -------------------- Switch Facilities -------------------- */
+
+#define PIN_SW1 18
+#define SW1 1U << PIN_SW1
+#define PIN_SW2 19
+#define SW2 1U << PIN_SW2
+
 /* -------------------- LED Facilities -------------------- */
+
 #define RED_LED 27
 #define BLUE_LED 26
 #define GREEN_LED 25
 
 #define LED_ON 1U
 #define LED_OFF 0U
-
-#define PIN_SW1 18
-#define SW1 1U << PIN_SW1
-#define PIN_SW2 19
-#define SW2 1U << PIN_SW2
 
 void BSP_ledRedOn(void);
 void BSP_ledRedOff(void);
