@@ -77,8 +77,11 @@ State TemperatureRecorder_recording(TemperatureRecorder *const me, Event const *
         break;
 
     case REPORT_TEMP_SIG:
-        // report_temperature_cb(...);
-        ESP_LOGI("TEMP AO", "Temp: %.3f", (me->current_temp_celsius) * 1.8f + 32.0f);
+        ReportTemperatureEvent *const report_evt = (ReportTemperatureEvent *const)e;
+        if (report_evt->report_cb != NULL)
+        {
+            report_evt->report_cb(me);
+        }
         status = HANDLED_STATUS;
         break;
 

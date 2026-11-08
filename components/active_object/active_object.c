@@ -61,7 +61,7 @@ static void Active_eventLoop(void *pdata)
     // event loop message-pump
     for (;;)
     {
-        Event e;
+        Event const *e;
         esp_err_t err;
 
         // wait & get the event
@@ -69,7 +69,7 @@ static void Active_eventLoop(void *pdata)
         assert(err == pdTRUE);
 
         // dispatch the event
-        Hsm_dispatch(&(me->super), &e);
+        Hsm_dispatch(&(me->super), e);
     }
 }
 
@@ -104,13 +104,13 @@ void Active_start(Active *const me,
 
 void Active_post(Active *const me, Event const *const e)
 {
-    BaseType_t res = xQueueSend(me->queue, e, pdTICKS_TO_MS(100));
+    BaseType_t res = xQueueSend(me->queue, (void *)&e, pdTICKS_TO_MS(100));
     assert(res == pdTRUE);
 }
 
 void Active_postFromISR(Active *const me, Event const *const e, BaseType_t *pxHigherPriorityWasTaken)
 {
-    BaseType_t res = xQueueSendFromISR(me->queue, e, pxHigherPriorityWasTaken);
+    BaseType_t res = xQueueSendFromISR(me->queue, (void *)&e, pxHigherPriorityWasTaken);
     assert(res == pdTRUE);
 }
 

@@ -5,14 +5,18 @@
 
 #define RECORDING_TIME_PERIOD_MS 500
 
-typedef struct TemperatureRecorder TemperatureRecorder;
-
-struct TemperatureRecorder
+typedef struct TemperatureRecorder
 {
     Active super;
     TimeEvent timeEvt;
     float current_temp_celsius;
-};
+} TemperatureRecorder;
+
+typedef struct ReportTemperatureEvent
+{
+    Event super;
+    void (*report_cb)(TemperatureRecorder *const me);
+} ReportTemperatureEvent;
 
 void TemperatureRecorder_ctor(TemperatureRecorder *const me);
 State TemperatureRecorder_initial(TemperatureRecorder *const me, Event const *const e);

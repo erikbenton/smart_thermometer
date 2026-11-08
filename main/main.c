@@ -17,10 +17,17 @@ static StackType_t temperature_recorder_stack[configMINIMAL_STACK_SIZE];
 static TemperatureRecorder temperature_recorder;
 static Active *AO_temperature_recorder = &(temperature_recorder.super);
 
+static void report_temperature(TemperatureRecorder *const me)
+{
+    ESP_LOGI("APP", "Temp: %.3f", (me->current_temp_celsius) * 1.8f + 32.0f);
+}
+
 void read_tmp117_temperature(TimerHandle_t xTimer)
 {
-    static Event const report_temp_evt = {REPORT_TEMP_SIG};
-    Active_post(AO_temperature_recorder, &report_temp_evt);
+    static const ReportTemperatureEvent report_temperature_evt = {
+        .super.sig = REPORT_TEMP_SIG,
+        .report_cb = report_temperature};
+    Active_post(AO_temperature_recorder, (Event const *const)(&report_temperature_evt));
 }
 
 void app_main(void)
