@@ -16,12 +16,8 @@ struct TemperatureRecorder
 
 void TemperatureRecorder_ctor(TemperatureRecorder *const me);
 State TemperatureRecorder_initial(TemperatureRecorder *const me, Event const *const e);
-State TemperatureRecorder_wait4Running(TemperatureRecorder *const me, Event const *const e);
-State TemperatureRecorder_running(TemperatureRecorder *const me, Event const *const e);
+State TemperatureRecorder_wait4Start(TemperatureRecorder *const me, Event const *const e);
 State TemperatureRecorder_recording(TemperatureRecorder *const me, Event const *const e);
-State TemperatureRecorder_idle(TemperatureRecorder *const me, Event const *const e);
-State TemperatureRecorder_report(TemperatureRecorder *const me, Event const *const e);
-State TemperatureRecorder_reset(TemperatureRecorder *const me, Event const *const e);
 typedef State (*TemperatureRecorderAction)(TemperatureRecorder *const me, Event const *const e);
 
 #endif

@@ -33,6 +33,7 @@ void Hsm_dispatch(Hsm *const me, Event const *const e)
     assert(me->state != (StateHandler)0);
     status = (me->state)(me, e);
 
+    // make sure to go up all super states
     while (status == SUPER_STATUS)
     {
         status = (me->temp)(me, e);
@@ -40,17 +41,9 @@ void Hsm_dispatch(Hsm *const me, Event const *const e)
 
     if (status == TRAN_STATUS)
     {
-        do // check if "entry event" transitions to another state
-        {
-            assert(me->state != (StateHandler)0);
-            prev_state(me, &exit_evt);
-            StateHandler tmp_prev = me->state;
-            status = (me->state)(me, &entry_evt);
-            if (status == TRAN_STATUS)
-            {
-                prev_state = tmp_prev;
-            }
-        } while (status == TRAN_STATUS);
+        assert(me->state != (StateHandler)0);
+        prev_state(me, &exit_evt);
+        status = (me->state)(me, &entry_evt);
     }
 }
 

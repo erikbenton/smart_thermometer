@@ -34,6 +34,8 @@ enum EventSignals
     START_RECORDING_SIG = USER_SIG,
     TIMEOUT_SIG,
     REPORT_TEMP_SIG,
+    RESET_RECORDING_SIG,
+    STOP_RECORDING_SIG,
     /* ... */
     MAX_SIG
 };
