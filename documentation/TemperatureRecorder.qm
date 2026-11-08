@@ -45,8 +45,7 @@ TRAN(wait4running);</entry>
       </tran_glyph>
      </tran>
      <state name="recording">
-      <entry>TimeEvent_arm(...);
-record_temp();</entry>
+      <entry>record_temp(...);</entry>
       <tran trig="" target="../../2">
        <action>Taken after finishing entry action</action>
        <tran_glyph color="2" conn="34,67,1,3,7">

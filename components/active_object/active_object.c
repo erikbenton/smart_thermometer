@@ -40,9 +40,17 @@ void Hsm_dispatch(Hsm *const me, Event const *const e)
 
     if (status == TRAN_STATUS)
     {
-        assert(me->state != (StateHandler)0);
-        prev_state(me, &exit_evt);
-        (me->state)(me, &entry_evt);
+        do // check if "entry event" transitions to another state
+        {
+            assert(me->state != (StateHandler)0);
+            prev_state(me, &exit_evt);
+            StateHandler tmp_prev = me->state;
+            status = (me->state)(me, &entry_evt);
+            if (status == TRAN_STATUS)
+            {
+                prev_state = tmp_prev;
+            }
+        } while (status == TRAN_STATUS);
     }
 }
 

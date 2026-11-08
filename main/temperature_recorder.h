@@ -3,6 +3,8 @@
 
 #include "active_object.h"
 
+#define RECORDING_TIME_PERIOD_MS 500
+
 typedef struct TemperatureRecorder TemperatureRecorder;
 
 struct TemperatureRecorder

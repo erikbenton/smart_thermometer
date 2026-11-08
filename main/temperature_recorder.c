@@ -2,6 +2,7 @@
 #include "active_object.h"
 #include "bsp.h"
 #include "tmp117.h"
+#include "esp_log.h"
 
 void TemperatureRecorder_ctor(TemperatureRecorder *const me)
 {
@@ -21,10 +22,22 @@ State TemperatureRecorder_wait4Running(TemperatureRecorder *const me, Event cons
     switch (e->sig)
     {
     case ENTRY_SIG:
+        BSP_ledGreenOn();
+        BSP_ledBlueOff();
+        status = HANDLED_STATUS;
+        break;
+
+    case EXIT_SIG:
+        BSP_ledGreenOff();
+        status = HANDLED_STATUS;
+        break;
+
+    case START_RECORDING_SIG:
+        status = TRANSITION(TemperatureRecorder_recording);
         break;
 
     default:
-        status = TRANSITION(Hsm_top);
+        status = SUPER(Hsm_top);
         break;
     }
 
@@ -37,10 +50,20 @@ State TemperatureRecorder_running(TemperatureRecorder *const me, Event const *co
     switch (e->sig)
     {
     case ENTRY_SIG:
+        // turn on led
+        status = HANDLED_STATUS;
+        break;
+
+    case REPORT_TEMP_SIG:
+        status = TRANSITION(TemperatureRecorder_report);
+        break;
+
+    case TIMEOUT_SIG:
+        status = TRANSITION(TemperatureRecorder_recording);
         break;
 
     default:
-        status = TRANSITION(Hsm_top);
+        status = SUPER(Hsm_top);
         break;
     }
 
@@ -53,10 +76,14 @@ State TemperatureRecorder_recording(TemperatureRecorder *const me, Event const *
     switch (e->sig)
     {
     case ENTRY_SIG:
+        BSP_ledBlueOn();
+        //ESP_LOGI("TEMP AO", "Recording");
+        TMP117_read_temperature_celsius(&(me->current_temp_celsius));
+        status = TRANSITION(TemperatureRecorder_idle);
         break;
 
     default:
-        status = TRANSITION(Hsm_top);
+        status = SUPER(TemperatureRecorder_running);
         break;
     }
 
@@ -69,10 +96,13 @@ State TemperatureRecorder_idle(TemperatureRecorder *const me, Event const *const
     switch (e->sig)
     {
     case ENTRY_SIG:
+        //ESP_LOGI("TEMP AO", "Idle");
+        TimeEvent_arm(&(me->timeEvt), pdMS_TO_TICKS(RECORDING_TIME_PERIOD_MS), 0U);
+        status = HANDLED_STATUS;
         break;
 
     default:
-        status = TRANSITION(Hsm_top);
+        status = SUPER(TemperatureRecorder_running);
         break;
     }
 
@@ -85,10 +115,13 @@ State TemperatureRecorder_report(TemperatureRecorder *const me, Event const *con
     switch (e->sig)
     {
     case ENTRY_SIG:
+        // run report_cb function
+        ESP_LOGI("TEMP AO", "Temp: %.2f F", (me->current_temp_celsius) * 1.8 + 32);
+        status = HANDLED_STATUS;
         break;
 
     default:
-        status = TRANSITION(Hsm_top);
+        status = SUPER(TemperatureRecorder_running);
         break;
     }
 
@@ -101,10 +134,12 @@ State TemperatureRecorder_reset(TemperatureRecorder *const me, Event const *cons
     switch (e->sig)
     {
     case ENTRY_SIG:
+        // reset all of the variables
+        status = TRANSITION(TemperatureRecorder_wait4Running);
         break;
 
     default:
-        status = TRANSITION(Hsm_top);
+        status = SUPER(TemperatureRecorder_running);
         break;
     }
 

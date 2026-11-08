@@ -8,34 +8,33 @@
 #include "temperature_recorder.h"
 #include "active_object.h"
 
-
 static TimerHandle_t tmp117_timer;
 
 static TemperatureRecorder temperature_recorder;
 static Event *temperature_recorder_q[10];
 static StackType_t temperature_recorder_stack[configMINIMAL_STACK_SIZE];
 
+static TemperatureRecorder temperature_recorder;
+static Active *AO_temperature_recorder = &(temperature_recorder.super);
+
 void read_tmp117_temperature(TimerHandle_t xTimer)
 {
-    float temp_celsius;
-
-    esp_err_t res = TMP117_read_temperature_celsius(&temp_celsius);
-
-    if (res == ESP_OK)
-    {
-        ESP_LOGI("TMP", "Temp: %.2f F", temp_celsius * 1.8 + 32);
-    }
-    else
-    {
-        ESP_LOGI("TMP", "TMP117 Error");
-    }
+    static Event const report_temp_evt = {REPORT_TEMP_SIG};
+    Active_post(AO_temperature_recorder, &report_temp_evt);
 }
 
 void app_main(void)
 {
-    BSP_init();
+    BSP_init(AO_temperature_recorder);
 
-    TMP117_init();
+    TemperatureRecorder_ctor(&temperature_recorder);
+    Active_start(&temperature_recorder.super,
+                 "Temp AO",
+                 1,
+                 temperature_recorder_q,
+                 sizeof(temperature_recorder_q) / sizeof(temperature_recorder_q[0]),
+                 temperature_recorder_stack,
+                 sizeof(temperature_recorder_stack) / sizeof(temperature_recorder_stack[0]));
 
     tmp117_timer = xTimerCreate(
         "TMP117",

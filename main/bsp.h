@@ -5,14 +5,35 @@
 #include "esp_err.h"
 #include "active_object.h"
 
-void BSP_init(void);
+void BSP_init(Active *temp_recorder);
 
-/* Events */
+/* -------------------- LED Facilities -------------------- */
+#define RED_LED 27
+#define BLUE_LED 26
+#define GREEN_LED 25
+
+#define LED_ON 1U
+#define LED_OFF 0U
+
+#define PIN_SW1 18
+#define SW1 1U << PIN_SW1
+#define PIN_SW2 19
+#define SW2 1U << PIN_SW2
+
+void BSP_ledRedOn(void);
+void BSP_ledRedOff(void);
+void BSP_ledBlueOn(void);
+void BSP_ledBlueOff(void);
+void BSP_ledGreenOn(void);
+void BSP_ledGreenOff(void);
+
+/* -------------------- Events -------------------- */
 
 enum EventSignals
 {
     START_RECORDING_SIG = USER_SIG,
     TIMEOUT_SIG,
+    REPORT_TEMP_SIG,
     /* ... */
     MAX_SIG
 };
