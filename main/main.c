@@ -19,7 +19,7 @@ static Active *AO_temperature_recorder = &(temperature_recorder.super);
 
 static void report_temperature(TemperatureRecorder *const me)
 {
-    ESP_LOGI("APP", "Temp: %.3f", (me->current_temp_celsius) * 1.8f + 32.0f);
+    ESP_LOGI("APP", "Temp: %.3f °F", (me->current_temp_celsius) * 1.8f + 32.0f);
 }
 
 void read_tmp117_temperature(TimerHandle_t xTimer)

@@ -12,10 +12,12 @@ typedef struct TemperatureRecorder
     float current_temp_celsius;
 } TemperatureRecorder;
 
+typedef void (*report_temperature_cb)(TemperatureRecorder *const me);
+
 typedef struct ReportTemperatureEvent
 {
     Event super;
-    void (*report_cb)(TemperatureRecorder *const me);
+    report_temperature_cb report_cb;
 } ReportTemperatureEvent;
 
 void TemperatureRecorder_ctor(TemperatureRecorder *const me);

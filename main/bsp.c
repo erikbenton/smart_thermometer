@@ -120,7 +120,7 @@ void vApplicationTickHook(void)
         { /* is SW1 depressed? */
             /* post the "button-pressed" event */
             static Event const start_recording_evt = {START_RECORDING_SIG};
-            Active_post(temperature_recorder, &start_recording_evt);
+            Active_postFromISR(temperature_recorder, &start_recording_evt, &xHigherPriorityTaskWoken);
         }
         else
         { /* the button is released */
@@ -132,7 +132,7 @@ void vApplicationTickHook(void)
         { /* is SW2 depressed? */
             /* post the "button-pressed" event */
             static Event const stop_recording_evt = {STOP_RECORDING_SIG};
-            Active_post(temperature_recorder, &stop_recording_evt);
+            Active_postFromISR(temperature_recorder, &stop_recording_evt, &xHigherPriorityTaskWoken);
         }
         else
         { /* the button is released */
