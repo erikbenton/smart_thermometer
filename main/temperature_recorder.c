@@ -4,12 +4,12 @@
 #include "tmp117.h"
 #include "esp_log.h"
 
-void record_temperature(TemperatureRecorder *const me)
+static void record_temperature(TemperatureRecorder *const me)
 {
     TMP117_read_temperature_celsius(&(me->current_temp_celsius));
 }
 
-void reset_recordings(TemperatureRecorder *const me)
+static void reset_recordings(TemperatureRecorder *const me)
 {
     me->current_temp_celsius = 0.0f;
 }

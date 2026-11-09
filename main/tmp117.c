@@ -5,9 +5,9 @@
 
 static i2c_master_dev_handle_t i2c_tmp117_dev_handle;
 
-uint8_t write_buffer_to_read[1] = {0x00};
-uint8_t read_buffer[2];
-float conversion_factor = 0.0078125;
+static uint8_t const write_buffer_to_read[1] = {0x00};
+static uint8_t read_buffer[2];
+static float const conversion_factor = 0.0078125f;
 
 void TMP117_init(void)
 {
@@ -32,7 +32,7 @@ esp_err_t TMP117_read_temperature_celsius(float *temperature)
 
     if (err_res == ESP_OK)
     {
-        // I2C is MSB - need to shift 0th byte first
+        // I2C is MSB - need to shift 0th byte to be LSB
         int16_t temp = (int16_t)(read_buffer[0] << 8) | (int16_t)read_buffer[1];
         *temperature = (float)temp * conversion_factor;
     }
