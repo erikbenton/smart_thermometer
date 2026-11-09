@@ -4,14 +4,33 @@
 #include "tmp117.h"
 #include "esp_log.h"
 
+// exponential moving average filter
+static void ema_filter_temperature(TemperatureRecorder *const me, float temperature)
+{
+    if (me->is_filter_started)
+    {
+        me->filtered_temp_celsius = me->filter_alpha * temperature + (1.0f - me->filter_alpha) * me->filtered_temp_celsius;
+    }
+    else
+    {
+        me->is_filter_started = true;
+        me->filtered_temp_celsius = temperature;
+    }
+}
+
 static void record_temperature(TemperatureRecorder *const me)
 {
-    TMP117_read_temperature_celsius(&(me->current_temp_celsius));
+    float temperature;
+    TMP117_read_temperature_celsius(&temperature);
+    ema_filter_temperature(me, temperature);
+    me->raw_temp_celsius = temperature;
 }
 
 static void reset_recordings(TemperatureRecorder *const me)
 {
-    me->current_temp_celsius = 0.0f;
+    me->is_filter_started = false;
+    me->filtered_temp_celsius = 0.0f;
+    me->raw_temp_celsius = 0.0f;
 }
 
 void TemperatureRecorder_ctor(TemperatureRecorder *const me)
@@ -23,6 +42,8 @@ void TemperatureRecorder_ctor(TemperatureRecorder *const me)
 State TemperatureRecorder_initial(TemperatureRecorder *const me, Event const *const e)
 {
     TMP117_init();
+    me->is_filter_started = false;
+    me->filter_alpha = 0.5;
     return TRANSITION(TemperatureRecorder_wait4Start);
 }
 

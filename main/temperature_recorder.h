@@ -3,13 +3,16 @@
 
 #include "active_object.h"
 
-#define RECORDING_TIME_PERIOD_MS 500
+#define RECORDING_TIME_PERIOD_MS 200
 
 typedef struct TemperatureRecorder
 {
     Active super;
     TimeEvent timeEvt;
-    float current_temp_celsius;
+    float filtered_temp_celsius;
+    float raw_temp_celsius;
+    float filter_alpha;
+    bool is_filter_started;
 } TemperatureRecorder;
 
 typedef void (*report_temperature_cb)(TemperatureRecorder *const me);
